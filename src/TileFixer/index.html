@@ -10,11 +10,12 @@
 <script src="http://leafletjs.com/dist/leaflet.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+  var currentMaxZoom = 19;
   var tilerId = "openstreetmap.org";
   var tileUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   var map = L.map("map").setView([32.755488, -97.330766], 13);
   var layer = L.tileLayer(tileUrl, {
-    maxZoom: 18,
+    maxZoom: currentMaxZoom,
     attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, " +
       "<a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, ",
     id: tilerId
@@ -22,17 +23,17 @@
   layer.addTo(map);
   var tileUrl = "metaTile/{z}/{x}/{y}";
   var metaLayer = L.tileLayer(tileUrl, {
-    maxZoom: 18,
+    maxZoom: currentMaxZoom,
     attribution: "ME ME ME"
   });
   metaLayer.addTo(map);
 
-  var spectrumMetaTileUrl = "spectrumMetaTile/{z}/{x}/{y}";
-  var spectrumMetaLayer = L.tileLayer(spectrumMetaTileUrl, {
-    maxZoom: 18,
-    attribution: "ME ME ME"
-  });
-  spectrumMetaLayer.addTo(map);
+  //var spectrumMetaTileUrl = "spectrumMetaTile/{z}/{x}/{y}";
+  //var spectrumMetaLayer = L.tileLayer(spectrumMetaTileUrl, {
+  //  maxZoom: 18,
+  //  attribution: "ME ME ME"
+  //});
+  //spectrumMetaLayer.addTo(map);
 
 </script>
 </body>

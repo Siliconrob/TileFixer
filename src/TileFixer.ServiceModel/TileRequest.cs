@@ -11,11 +11,24 @@ namespace Tile.ServiceModel
   /// </summary>
   public class TileRequest
   {
-    private const int LowestLevel = 19;
+    private const int LowestLevel = 20;
     public const int TileSize = 256;
     public int X { get; set; }
     public int Y { get; set; }
     public int Z { get; set; }
+
+    public static List<TileLevelRequestRange> BoundsToTiles(GeoPoint southEast, GeoPoint northWest)
+    {
+      var southEastRequests = LatLongToTiles(southEast);
+      var northWestRequests = LatLongToTiles(northWest);
+      return (from nw in northWestRequests
+        let se = southEastRequests.ElementAt(nw.Z)
+        select new TileLevelRequestRange
+        {
+          SouthEast = se,
+          NorthWest = nw
+        }).ToList();
+    }
 
     public static List<TileRequest> LatLongToTiles(GeoPoint point)
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using ServiceStack;
+﻿using ServiceStack;
 using Tile.Caching;
 using Tile.ServiceModel;
 
@@ -44,6 +41,13 @@ namespace Tile.ServiceInterface
         Longitude = request.Longitude
       };
       return TileRequest.LatLongToTiles(point);
+    }
+
+    public object Get(GetBoundedTileRequests request)
+    {
+      var southEast = new GeoPoint { Latitude = request.SouthEastLat, Longitude = request.SouthEastLng };
+      var northWest = new GeoPoint { Latitude = request.NorthWestLat, Longitude = request.NorthWestLng };
+      return TileRequest.BoundsToTiles(southEast, northWest);
     }
   }
 }

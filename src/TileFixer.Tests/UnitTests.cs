@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 using ServiceStack;
 using ServiceStack.Testing;
 using Tile.ServiceInterface;
@@ -27,6 +29,26 @@ namespace TileFixer.Tests
     public void TestFixtureTearDown()
     {
       appHost.Dispose();
+    }
+
+    [Test]
+    public void TestGetBoundedTileRequests()
+    {
+      var boundsRequest = new GetBoundedTileRequests
+      {
+        NorthWestLat = 31,
+        NorthWestLng = -96,
+        SouthEastLat = 29,
+        SouthEastLng = -97
+      };
+      var url = boundsRequest.ToGetUrl();
+      var service = appHost.Container.Resolve<TileLayer>();
+      var response = (List<TileLevelRequestRange>) service.Get(boundsRequest);
+
+      var tileRequests = response.ElementAt(13).LevelRequests();
+
+      //Assert.That(response.ToJson(), Is.EqualTo(testBounds));
+      Assert.That(tileRequests.Count > 0);
     }
 
     [Test]
