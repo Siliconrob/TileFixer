@@ -11,14 +11,13 @@ namespace Tile.Caching
 {
   public static class TileFactory
   {
-    private const string BaseUrl = @"TileServer";
     private const string ServiceUrl = @"TileService";
-    private const string ParamUrl = @"{0}/{1}/{2}/{3}:{4}/{5}";   
+    private const string ParamUrl = @"{0}/{1}/{2}/{3}:{4}/{5}";
 
     private static string RestParams(GetTile request)
     {
       return ParamUrl.Fmt(
-        new AppSettings().Get(ServiceUrl, "rest/Spatial/MapTilingService/NamedTiles"),
+        ServiceUri().PathAndQuery,
         request.LayerName,
         request.zIndex + 1,
         request.xIndex + 1,
@@ -31,11 +30,18 @@ namespace Tile.Caching
       return GetTile(request).RawBytes;
     }
 
+    private static Uri ServiceUri()
+    {
+      return new Uri(new AppSettings().Get(ServiceUrl, "http://localhost:8080/rest/Spatial/MapTilingService/NamedTiles"));
+    }
+
+
     private static IRestResponse GetTile(GetTile request)
-      {
-      var client = new RestClient(new AppSettings().Get(BaseUrl, "http://localhost:8080"));
+    {
+      var uri = ServiceUri();
+      var client = new RestClient(uri.AbsoluteUri.Replace(uri.PathAndQuery, ""));
       var tileRequest = new RestRequest(RestParams(request));
-      var log = typeof(TileFactory).Log();
+      var log = typeof (TileFactory).Log();
       var msg = new
       {
         Common = request.ToGetUrl(),
@@ -59,7 +65,7 @@ namespace Tile.Caching
     {
       return () =>
       {
-        var log = typeof(TileFactory).Log();
+        var log = typeof (TileFactory).Log();
         var bounds = TileCompute.GetBounds(request.xIndex, request.yIndex, request.zIndex);
         log.DebugFormat("Tile bounds: {0}", bounds);
 
@@ -67,7 +73,7 @@ namespace Tile.Caching
         log.DebugFormat("Content Type: {0}, size in bytes {1}", tileResponse.ContentType,
           tileResponse.RawBytes.LongLength);
 
-        return new CachedTile { Image = tileResponse.RawBytes, Bounds = bounds };
+        return new CachedTile {Image = tileResponse.RawBytes, Bounds = bounds};
       };
     }
 
@@ -81,7 +87,7 @@ namespace Tile.Caching
         g.DrawString(text, new Font("Consolas", 14), Brushes.Blue, 0f, 0f);
         image.MakeTransparent(Color.White);
         var converter = new ImageConverter();
-        var data = (byte[])converter.ConvertTo(image, typeof(byte[]));
+        var data = (byte[]) converter.ConvertTo(image, typeof (byte[]));
         return data;
       }
     }
