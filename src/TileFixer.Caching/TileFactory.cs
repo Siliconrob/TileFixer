@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using RestSharp;
 using ServiceStack;
-using ServiceStack.Configuration;
 using ServiceStack.Text;
 using Tile.ServiceModel;
 using IRestClient = RestSharp.IRestClient;
@@ -12,13 +11,31 @@ namespace Tile.Caching
 {
   public static class TileFactory
   {
+    private static Func<GetTile, ServiceInput, string> _serviceTransForm;
     public static string ServiceUri { get; set; }
     private const string ParamUrl = @"{0}/{1}/{2}/{3}:{4}/{5}";
 
-    private static string RestParams(GetTile request, Uri serviceUri)
+    public static Func<GetTile, ServiceInput, string> ServiceTransForm
     {
-      return ParamUrl.Fmt(
-        serviceUri.PathAndQuery,
+      get
+      {
+        _serviceTransForm = _serviceTransForm ?? DefaultSpectrum;
+        return _serviceTransForm;
+      }
+      set
+      {
+        _serviceTransForm = value;
+      }
+    }
+
+    public static string DefaultSpectrum(GetTile request, ServiceInput serviceInput)
+    {
+      serviceInput = serviceInput ?? new ServiceInput();
+      serviceInput.TargetParamFmt = serviceInput.TargetParamFmt ?? ParamUrl;
+      serviceInput.ServiceUri = serviceInput.ServiceUri ?? DefaultServiceUri();
+
+      return serviceInput.TargetParamFmt.Fmt(
+        serviceInput.ServiceUri.PathAndQuery,
         request.LayerName,
         request.zIndex + 1,
         request.xIndex + 1,
@@ -73,7 +90,7 @@ namespace Tile.Caching
     private static IRestResponse GetTile(GetTile request, Uri serviceUri)
     {
       var client = new RestClient(serviceUri.AbsoluteUri.Replace(serviceUri.PathAndQuery, ""));
-      var tileRequest = new RestRequest(RestParams(request, serviceUri));
+      var tileRequest = new RestRequest(request.ConvertRequest(new ServiceInput { ServiceUri = serviceUri }));
       return GetTile(request, client, tileRequest);
     }
 
@@ -133,4 +150,19 @@ namespace Tile.Caching
       return GetTextTile(tileText);
     }
   }
+
+  public static class GetTileExtensions
+  {
+    public static string ConvertRequest(this GetTile input, ServiceInput target)
+    {
+      return TileFactory.ServiceTransForm(input, target);
+    }
+  }
+
+  public class ServiceInput
+  {
+    public Uri ServiceUri { get; set; }
+    public string TargetParamFmt { get; set; }
+  }
+
 }
