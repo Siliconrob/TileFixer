@@ -21,6 +21,7 @@ namespace Tile.ServiceInterface
       var log = this.Log();
       var cacheKey = request.CacheKey();
       log.DebugFormat("Cache Id: {0}", cacheKey);
+      TileFactory.ServiceUri = "http://localhost:8080/rest/Spatial/MapTilingService/MyTiles/Tiles";
       var result = Cache.ToResultUsingCache(cacheKey, TileFactory.RawTile(request));
       return new HttpResult(result.Image, MimeTypes.ImagePng);
     }

@@ -12,13 +12,13 @@ namespace Tile.Caching
 {
   public static class TileFactory
   {
-    private const string ServiceUrl = @"TileService";
+    public static string ServiceUri { get; set; }
     private const string ParamUrl = @"{0}/{1}/{2}/{3}:{4}/{5}";
 
-    private static string RestParams(GetTile request, string serviceKey)
+    private static string RestParams(GetTile request, Uri serviceUri)
     {
       return ParamUrl.Fmt(
-        ServiceUri(serviceKey).PathAndQuery,
+        serviceUri.PathAndQuery,
         request.LayerName,
         request.zIndex + 1,
         request.xIndex + 1,
@@ -26,9 +26,16 @@ namespace Tile.Caching
         request.StaticResource);
     }
 
-    public static byte[] Image(GetTile request, string serviceKey = ServiceUrl)
+    public static byte[] Image(GetTile request)
     {
-      return GetTile(request, serviceKey).RawBytes;
+      var uri = !String.IsNullOrEmpty(ServiceUri) ? new Uri(ServiceUri) : DefaultServiceUri();
+      return GetTile(request, uri).RawBytes;
+    }
+
+    public static byte[] Image(GetTile request, string serviceUri)
+    {
+      var uri = !String.IsNullOrEmpty(serviceUri) ? new Uri(ServiceUri) : DefaultServiceUri();
+      return GetTile(request, uri).RawBytes;
     }
 
     public static byte[] Image(GetTile tileRequest, IRestClient client, IRestRequest webRequest)
@@ -36,9 +43,9 @@ namespace Tile.Caching
       return GetTile(tileRequest, client, webRequest).RawBytes;
     }
 
-    private static Uri ServiceUri(string tileServiceKey)
+    private static Uri DefaultServiceUri()
     {
-      return new Uri(new AppSettings().Get(tileServiceKey, "http://localhost:8080/rest/Spatial/MapTilingService/NamedTiles"));
+      return new Uri("http://localhost:8080/rest/Spatial/MapTilingService/NamedTiles");
     }
 
     private static IRestResponse GetTile(GetTile tileRequest, IRestClient client, IRestRequest webRequest)
@@ -63,15 +70,19 @@ namespace Tile.Caching
       return tileResponse;
     }
 
-    private static IRestResponse GetTile(GetTile request, string tileServiceKey)
+    private static IRestResponse GetTile(GetTile request, Uri serviceUri)
     {
-      var uri = ServiceUri(tileServiceKey);
-      var client = new RestClient(uri.AbsoluteUri.Replace(uri.PathAndQuery, ""));
-      var tileRequest = new RestRequest(RestParams(request, tileServiceKey));
+      var client = new RestClient(serviceUri.AbsoluteUri.Replace(serviceUri.PathAndQuery, ""));
+      var tileRequest = new RestRequest(RestParams(request, serviceUri));
       return GetTile(request, client, tileRequest);
     }
 
-    public static Func<CachedTile> RawTile(GetTile request, string serviceKey = ServiceUrl)
+    public static Func<CachedTile> RawTile(GetTile request)
+    {
+      return RawTile(request, ServiceUri);
+    }
+
+    public static Func<CachedTile> RawTile(GetTile request, string serviceUri)
     {
       return () =>
       {
@@ -79,7 +90,7 @@ namespace Tile.Caching
         var bounds = TileCompute.GetBounds(request.xIndex, request.yIndex, request.zIndex);
         log.DebugFormat("Tile bounds: {0}", bounds);
 
-        var tileResponse = GetTile(request, serviceKey);
+        var tileResponse = GetTile(request, new Uri(serviceUri));
         log.DebugFormat("Content Type: {0}, size in bytes {1}", tileResponse.ContentType,
           (tileResponse.RawBytes ?? new byte[] {}).LongLength);
 
