@@ -9,14 +9,14 @@ namespace Tile.Fixer
 {
   public class Global : HttpApplication
   {
-    private RouteAppHost AppHost;
+    private RouteAppHost _appHost;
 
     protected void Application_Start(object sender, EventArgs e)
     {
       LogManager.LogFactory = new NLogFactory();
       // Initialize ServiceStack Host
-      AppHost = new RouteAppHost();
-      AppHost.Init();
+      _appHost = new RouteAppHost();
+      _appHost.Init();
     }
 
     protected void Session_Start(object sender, EventArgs e)

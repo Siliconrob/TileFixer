@@ -1,11 +1,16 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Funq;
 using ServiceStack;
+using ServiceStack.Admin;
+using ServiceStack.Api.Swagger;
 using ServiceStack.Configuration;
 using ServiceStack.MsgPack;
 using ServiceStack.ProtoBuf;
 using ServiceStack.Redis;
 using ServiceStack.Text;
+using ServiceStack.Validation;
+using ServiceStack.VirtualPath;
 using Tile.ServiceInterface;
 using Tile.ServiceModel;
 
@@ -36,8 +41,8 @@ namespace Tile.Fixer
     public override void Configure(Container container)
     {
       RegisterUnHandledExceptions();
-      var RedisServerUrl = (new AppSettings()).Get(RedisHost, "localhost:6379");
-      container.Register<IRedisClientsManager>(c => new RedisManagerPool(RedisServerUrl));
+      var redisServerUrl = (new AppSettings()).Get(RedisHost, "localhost:6379");
+      container.Register<IRedisClientsManager>(c => new RedisManagerPool(redisServerUrl));
       container.Register(c => c.Resolve<IRedisClientsManager>().GetCacheClient()).ReusedWithin(ReuseScope.None);
 
       Plugins.Add(new ServerEventsFeature());
@@ -49,8 +54,23 @@ namespace Tile.Fixer
       Plugins.Add(new MsgPackFormat());
       Plugins.Add(new ProtoBufFormat());
       // logs available at  /requestLogs
-      Plugins.Add(new RequestLogsFeature());
+      Plugins.Add(new RequestLogsFeature
+      {
+        RequestLogger = new CsvRequestLogger(
+            new FileSystemVirtualPathProvider(this, Config.WebHostPhysicalPath),
+            "requestlogs/{year}-{month}/{year}-{month}-{day}.csv",
+            "requestlogs/{year}-{month}/{year}-{month}-{day}-errors.csv",
+            TimeSpan.FromSeconds(5))
+      });
 
+      Plugins.Add(new AdminFeature());
+
+      // Register service validators
+      Plugins.Add(new ValidationFeature());
+      container.RegisterValidators(typeof(TileLayer).Assembly);
+
+      // Add swagger API
+      Plugins.Add(new SwaggerFeature());
     }
 
     private void RegisterServiceExceptions()

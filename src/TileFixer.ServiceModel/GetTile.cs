@@ -8,9 +8,9 @@ namespace Tile.ServiceModel
   {
     public string LayerName { get; set; }
     public string StaticResource { get; set; }
-    public int zIndex { get; set; }
-    public int xIndex { get; set; }
-    public int yIndex { get; set; }
+    public int ZIndex { get; set; }
+    public int XIndex { get; set; }
+    public int YIndex { get; set; }
   }
 
   public static class GetTileExtensions
@@ -20,9 +20,9 @@ namespace Tile.ServiceModel
     {
       return CacheKeyFormat.Fmt(
         request.LayerName,
-        request.zIndex,
-        request.xIndex,
-        request.yIndex,
+        request.ZIndex,
+        request.XIndex,
+        request.YIndex,
         request.StaticResource);
     }    
   }

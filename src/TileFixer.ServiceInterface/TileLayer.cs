@@ -1,4 +1,5 @@
 ﻿using ServiceStack;
+using ServiceStack.Configuration;
 using Tile.Caching;
 using Tile.ServiceModel;
 
@@ -21,14 +22,17 @@ namespace Tile.ServiceInterface
       var log = this.Log();
       var cacheKey = request.CacheKey();
       log.DebugFormat("Cache Id: {0}", cacheKey);
-      TileFactory.ServiceUri = "http://localhost:8080/rest/Spatial/MapTilingService/MyTiles/Tiles";
+      if (TileFactory.ServiceUri.Current.IsNullOrEmpty())
+      {
+        TileFactory.ServiceUri.Current = (new AppSettings()).Get("TileService", TileFactory.ServiceUri.Default);
+      }
       var result = Cache.ToResultUsingCache(cacheKey, TileFactory.RawTile(request));
       return new HttpResult(result.Image, MimeTypes.ImagePng);
     }
 
     public object Get(GetTileBounds request)
     {
-      return TileCompute.GetBounds(request.xIndex, request.yIndex, request.zIndex);
+      return TileCompute.GetBounds(request.XIndex, request.YIndex, request.ZIndex);
     }
 
     public object Get(GetTileRequests request)

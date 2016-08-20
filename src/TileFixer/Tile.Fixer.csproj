@@ -62,6 +62,14 @@
       <HintPath>..\packages\ServiceStack.4.0.62\lib\net40\ServiceStack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ServiceStack.Admin, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Admin.4.0.62\lib\net45\ServiceStack.Admin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Api.Swagger, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Api.Swagger.4.0.62\lib\net40\ServiceStack.Api.Swagger.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ServiceStack.Client, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.Client.4.0.62\lib\net40\ServiceStack.Client.dll</HintPath>
       <Private>True</Private>
@@ -82,12 +90,20 @@
       <HintPath>..\packages\ServiceStack.MsgPack.4.0.62\lib\net40\ServiceStack.MsgPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ServiceStack.OrmLite, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.OrmLite.4.0.62\lib\net45\ServiceStack.OrmLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ServiceStack.ProtoBuf, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.ProtoBuf.4.0.62\lib\net40\ServiceStack.ProtoBuf.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Redis, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.Redis.4.0.62\lib\net40\ServiceStack.Redis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Server, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Server.4.0.62\lib\net45\ServiceStack.Server.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Text, Version=4.0.62.0, Culture=neutral, processorArchitecture=MSIL">
@@ -129,6 +145,7 @@
     </None>
     <None Include="Properties\PublishProfiles\LCAT Test.pubxml" />
     <None Include="Properties\PublishProfiles\ToLCATServer.pubxml" />
+    <None Include="Properties\PublishProfiles\x.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

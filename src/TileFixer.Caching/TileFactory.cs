@@ -11,8 +11,14 @@ namespace Tile.Caching
 {
   public static class TileFactory
   {
+    public static class ServiceUri
+    {
+      public static string Current { get; set; }
+      public static string Default = @"http://localhost:8080/rest/Spatial/MapTilingService/MyTiles/Tiles";
+    }
+
     private static Func<GetTile, ServiceInput, string> _serviceTransForm;
-    public static string ServiceUri { get; set; }
+    //public static string ServiceUri { get; set; }
     private const string ParamUrl = @"{0}/{1}/{2}/{3}:{4}/{5}";
 
     public static Func<GetTile, ServiceInput, string> ServiceTransForm
@@ -37,21 +43,21 @@ namespace Tile.Caching
       return serviceInput.TargetParamFmt.Fmt(
         serviceInput.ServiceUri.PathAndQuery,
         request.LayerName,
-        request.zIndex + 1,
-        request.xIndex + 1,
-        request.yIndex + 1,
+        request.ZIndex + 1,
+        request.XIndex + 1,
+        request.YIndex + 1,
         request.StaticResource);
     }
 
     public static byte[] Image(GetTile request)
     {
-      var uri = !String.IsNullOrEmpty(ServiceUri) ? new Uri(ServiceUri) : DefaultServiceUri();
+      var uri = !String.IsNullOrEmpty(ServiceUri.Current) ? new Uri(ServiceUri.Current) : DefaultServiceUri();
       return GetTile(request, uri).RawBytes;
     }
 
     public static byte[] Image(GetTile request, string serviceUri)
     {
-      var uri = !String.IsNullOrEmpty(serviceUri) ? new Uri(ServiceUri) : DefaultServiceUri();
+      var uri = !String.IsNullOrEmpty(serviceUri) ? new Uri(ServiceUri.Current) : DefaultServiceUri();
       return GetTile(request, uri).RawBytes;
     }
 
@@ -96,7 +102,7 @@ namespace Tile.Caching
 
     public static Func<CachedTile> RawTile(GetTile request)
     {
-      return RawTile(request, ServiceUri);
+      return RawTile(request, ServiceUri.Current);
     }
 
     public static Func<CachedTile> RawTile(GetTile request, string serviceUri)
@@ -104,14 +110,14 @@ namespace Tile.Caching
       return () =>
       {
         var log = typeof (TileFactory).Log();
-        var bounds = TileCompute.GetBounds(request.xIndex, request.yIndex, request.zIndex);
+        var bounds = TileCompute.GetBounds(request.XIndex, request.YIndex, request.ZIndex);
         log.DebugFormat("Tile bounds: {0}", bounds);
 
         var tileResponse = GetTile(request, new Uri(serviceUri));
         log.DebugFormat("Content Type: {0}, size in bytes {1}", tileResponse.ContentType,
           (tileResponse.RawBytes ?? new byte[] {}).LongLength);
 
-        return new CachedTile {Image = tileResponse.RawBytes, Bounds = bounds};
+        return new CachedTile {Image = tileResponse.RawBytes ?? new byte[] { }, Bounds = bounds};
       };
     }
 
@@ -134,9 +140,9 @@ namespace Tile.Caching
     {
       var tileText = "NonStandard{0}Z: {1}{0}X: {2}{0}Y: {3}{0}".Fmt(
         Environment.NewLine,
-        request.zIndex + 1,
-        request.xIndex + 1,
-        request.yIndex + 1);
+        request.ZIndex + 1,
+        request.XIndex + 1,
+        request.YIndex + 1);
       return GetTextTile(tileText);
     }
 
@@ -144,9 +150,9 @@ namespace Tile.Caching
     {
       var tileText = "Common{0}Z: {1}{0}X: {2}{0}Y: {3}{0}".Fmt(
         Environment.NewLine,
-        request.zIndex,
-        request.xIndex,
-        request.yIndex);
+        request.ZIndex,
+        request.XIndex,
+        request.YIndex);
       return GetTextTile(tileText);
     }
   }

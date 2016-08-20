@@ -4,7 +4,7 @@ using Tile.ServiceModel;
 
 namespace Tile.Caching
 {
-  public static class ICacheClientExtensions
+  public static class CacheClientExtensions
   {
     public static T ToResultUsingCache<T>(this ICacheClient cache,
       string cacheKey,
