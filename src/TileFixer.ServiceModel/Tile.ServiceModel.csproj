@@ -63,10 +63,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetaTiles\EmptyTile.cs" />
     <Compile Include="TileLevelRequestRange.cs" />
     <Compile Include="TileRequests\GetBoundedTileRequests.cs" />
     <Compile Include="MetaTiles\SpectrumMetaTile.cs" />

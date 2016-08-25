@@ -49,6 +49,28 @@ namespace Tile.Caching
         request.StaticResource);
     }
 
+    private static byte[] _empty;
+
+    private static byte[] EmptyTile()
+    {
+      using (var image = new Bitmap(TileRequest.TileSize, TileRequest.TileSize, PixelFormat.Format32bppArgb))
+      {
+        var g = Graphics.FromImage(image);
+        g.FillRectangle(Brushes.White, 0f, 0f, image.Width, image.Height);
+        g.DrawRectangle(new Pen(Color.Black), 0f, 0f, image.Width, image.Height);
+        image.MakeTransparent(Color.White);
+        var converter = new ImageConverter();
+        var data = (byte[]) converter.ConvertTo(image, typeof(byte[]));
+        return data;
+      }
+    }
+
+    public static byte[] Image(EmptyTile request)
+    {
+      _empty = _empty ?? EmptyTile();
+      return _empty;
+    }
+
     public static byte[] Image(GetTile request)
     {
       var uri = !String.IsNullOrEmpty(ServiceUri.Current) ? new Uri(ServiceUri.Current) : DefaultServiceUri();
