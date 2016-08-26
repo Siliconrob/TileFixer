@@ -57,7 +57,7 @@ namespace Tile.Caching
       {
         var g = Graphics.FromImage(image);
         g.FillRectangle(Brushes.White, 0f, 0f, image.Width, image.Height);
-        g.DrawRectangle(new Pen(Color.Black), 0f, 0f, image.Width, image.Height);
+        //g.DrawRectangle(new Pen(Color.Black), 0f, 0f, image.Width, image.Height);
         image.MakeTransparent(Color.White);
         var converter = new ImageConverter();
         var data = (byte[]) converter.ConvertTo(image, typeof(byte[]));
