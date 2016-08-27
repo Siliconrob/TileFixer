@@ -51,13 +51,32 @@ namespace Tile.Caching
 
     private static byte[] _empty;
 
+    public static EmptyOptions EmptyTileOptions { get; set; }
+
+    private static EmptyOptions FillInDefaults(EmptyOptions current)
+    {
+      current = current ?? EmptyOptions.Defaults();
+      current.Border = current.Border ?? EmptyOptions.Defaults().Border;
+      current.Border.Color = current.Border.Color ?? EmptyOptions.Defaults().Border.Color;
+      return current;
+    }
+
     private static byte[] EmptyTile()
     {
+      EmptyTileOptions = FillInDefaults(EmptyTileOptions);
       using (var image = new Bitmap(TileRequest.TileSize, TileRequest.TileSize, PixelFormat.Format32bppArgb))
       {
         var g = Graphics.FromImage(image);
         g.FillRectangle(Brushes.White, 0f, 0f, image.Width, image.Height);
-        //g.DrawRectangle(new Pen(Color.Black), 0f, 0f, image.Width, image.Height);
+        if (!EmptyTileOptions.Border.Hide)
+        {
+          var color = Color.Black;
+          if (EmptyTileOptions.Border.Color.HasValue)
+          {
+            color = EmptyTileOptions.Border.Color.Value;
+          }
+          g.DrawRectangle(new Pen(color), 0f, 0f, image.Width, image.Height);
+        }
         image.MakeTransparent(Color.White);
         var converter = new ImageConverter();
         var data = (byte[]) converter.ConvertTo(image, typeof(byte[]));
@@ -139,7 +158,7 @@ namespace Tile.Caching
         log.DebugFormat("Content Type: {0}, size in bytes {1}", tileResponse.ContentType,
           (tileResponse.RawBytes ?? new byte[] {}).LongLength);
 
-        return new CachedTile {Image = tileResponse.RawBytes ?? new byte[] { }, Bounds = bounds};
+        return new CachedTile {Image = tileResponse.RawBytes ?? EmptyTile(), Bounds = bounds};
       };
     }
 

@@ -7,11 +7,13 @@ namespace Tile.ServiceInterface
 {
   public class TileLayer : Service
   {
+    [CacheResponse(CacheControl = CacheControl.MustRevalidate | CacheControl.Public, Duration = 604800)]
     public object Get(MetaTile request)
     {
       return new HttpResult(TileFactory.MetaTile(request), MimeTypes.ImagePng);
     }
 
+    [CacheResponse(CacheControl = CacheControl.MustRevalidate | CacheControl.Public, Duration = 604800)]
     public object Get(SpectrumMetaTile request)
     {
       return new HttpResult(TileFactory.SpectrumMetaTile(request), MimeTypes.ImagePng);

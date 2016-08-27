@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmptyOptions.cs" />
     <Compile Include="TileFactory.cs" />
     <Compile Include="ICacheClientExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
