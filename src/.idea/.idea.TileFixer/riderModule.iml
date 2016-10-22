@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RIDER_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../..">
+      <sourceFolder url="file://$MODULE_DIR$/../../.nuget/NuGet.Config" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../.nuget/NuGet.exe" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../.nuget/NuGet.targets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../TileFixer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../TileFixer.Caching" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../TileFixer.ServiceInterface" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../TileFixer.ServiceModel" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../TileFixer.Tests" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.Caching/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.Caching/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.ServiceInterface/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.ServiceInterface/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.ServiceModel/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.ServiceModel/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.Tests/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer.Tests/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../TileFixer/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../packages" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
