@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using Funq;
 using ServiceStack;
 using ServiceStack.Admin;
 using ServiceStack.Api.Swagger;
+using ServiceStack.Caching;
 using ServiceStack.Configuration;
 using ServiceStack.MsgPack;
 using ServiceStack.ProtoBuf;
@@ -11,6 +13,7 @@ using ServiceStack.Redis;
 using ServiceStack.Text;
 using ServiceStack.Validation;
 using ServiceStack.VirtualPath;
+using ServiceStack.Wire;
 using Tile.ServiceInterface;
 using Tile.ServiceModel;
 
@@ -40,30 +43,54 @@ namespace Tile.Fixer
 
     public override void Configure(Container container)
     {
+      SetConfig(new HostConfig
+      {
+        DefaultContentType = MimeTypes.Json,
+        RedirectToDefaultDocuments = true,
+        DefaultRedirectPath = "/",
+        DebugMode = AppSettings.Get("DebugMode", false),
+        AddRedirectParamsToQueryString = true,
+        ScanSkipPaths =
+        {
+          "bin",
+          "obj",
+          "node_modules",
+          "wwwroot",
+          "wwwroot_build"
+        }
+      });
       RegisterUnHandledExceptions();
       var redisServerUrl = (new AppSettings()).Get(RedisHost, "localhost:6379");
       container.Register<IRedisClientsManager>(c => new RedisManagerPool(redisServerUrl));
       container.Register(c => c.Resolve<IRedisClientsManager>().GetCacheClient()).ReusedWithin(ReuseScope.None);
 
       Plugins.Add(new ServerEventsFeature());
-      Plugins.Add(new SessionFeature());
 
       // This enables cross-domain calls from Javascript client.
       Plugins.Add(new CorsFeature());
       Plugins.Add(new PostmanFeature());
       Plugins.Add(new MsgPackFormat());
       Plugins.Add(new ProtoBufFormat());
+      Plugins.Add(new WireFormat());
       // logs available at  /requestLogs
       Plugins.Add(new RequestLogsFeature
       {
         RequestLogger = new CsvRequestLogger(
-            new FileSystemVirtualPathProvider(this, Config.WebHostPhysicalPath),
-            "requestlogs/{year}-{month}/{year}-{month}-{day}.csv",
-            "requestlogs/{year}-{month}/{year}-{month}-{day}-errors.csv",
-            TimeSpan.FromSeconds(5))
+          new FileSystemVirtualPathProvider(this, Config.WebHostPhysicalPath),
+          "requestlogs/{year}-{month}/{year}-{month}-{day}.csv",
+          "requestlogs/{year}-{month}/{year}-{month}-{day}-errors.csv",
+          TimeSpan.FromSeconds(5))
       });
 
+
+      container.Register<ICacheClient>(new MemoryCacheClient());
+
+      // Add session feature so we can name Spectrum repository resources with Session ID.
+      Plugins.Add(new SessionFeature());
+
       Plugins.Add(new AdminFeature());
+      Plugins.Add(new AutoQueryFeature { MaxLimit = 100 });
+      Plugins.Add(new AutoQueryDataFeature { MaxLimit = 100 });
 
       // Register service validators
       Plugins.Add(new ValidationFeature());
@@ -71,6 +98,10 @@ namespace Tile.Fixer
 
       // Add swagger API
       Plugins.Add(new SwaggerFeature());
+
+      // Timespans are serialized to json as milliseconds
+      JsConfig<TimeSpan>.SerializeFn = time => time.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+      JsConfig.DateHandler = DateHandler.ISO8601;
     }
 
     private void RegisterServiceExceptions()

@@ -61,7 +61,7 @@ namespace Tile.Caching
       return current;
     }
 
-    private static byte[] EmptyTile()
+    public static byte[] EmptyTile()
     {
       EmptyTileOptions = FillInDefaults(EmptyTileOptions);
       using (var image = new Bitmap(TileRequest.TileSize, TileRequest.TileSize, PixelFormat.Format32bppArgb))
