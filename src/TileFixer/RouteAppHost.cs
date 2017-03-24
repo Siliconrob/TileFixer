@@ -34,6 +34,10 @@ namespace Tile.Fixer
       get
       {
         var asm = typeof(RouteAppHost).Assembly;
+        if (asm.Location == null)
+        {
+          return "";
+        }
         var info = FileVersionInfo.GetVersionInfo(asm.Location);
         var version = info.FileVersion;
         var name = asm.FullName.SplitOnFirst(',').FirstNonDefaultOrEmpty();
